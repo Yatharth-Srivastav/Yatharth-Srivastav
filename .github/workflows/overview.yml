@@ -1,0 +1,72 @@
+name: Check public Overview
+on:
+  workflow_dispatch:
+  pull_request:
+    paths: ['.github/workflows/overview.yml']
+  push:
+    branches: [main]
+    paths: ['README.md', 'assets/**', '.github/workflows/overview.yml']
+permissions: {}
+jobs:
+  overview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Install browser driver
+        run: npm install --prefix "$RUNNER_TEMP/overview" --ignore-scripts --no-audit --no-fund playwright-core@1.56.1
+      - name: Inspect the public profile in both themes
+        working-directory: ${{ runner.temp }}/overview
+        env:
+          OWNER: ${{ github.repository_owner }}
+        run: |
+          mkdir -p captures
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import { chromium } from 'playwright-core';
+          const browser = await chromium.launch({ channel: 'chrome' });
+          try {
+            for (const theme of ['light', 'dark']) {
+              const page = await browser.newPage({ colorScheme: theme, reducedMotion: 'reduce', viewport: {width: 1440, height: 1080} });
+              const url = 'https://github.com/' + encodeURIComponent(process.env.OWNER);
+              const article = page.locator('article').filter({has: page.getByRole('heading', {name: 'Selected work', exact: true})});
+              for (let attempt = 0; attempt < 5; attempt++) {
+                const response = await page.goto(url, {waitUntil: 'domcontentloaded'});
+                console.log(theme, response?.status(), page.url());
+                if (await article.isVisible()) break;
+                await page.waitForTimeout(10000);
+              }
+              await article.waitFor({timeout: 10000});
+              const banner = article.locator('picture img').first();
+              await banner.scrollIntoViewIfNeeded();
+              const picked = await banner.evaluate(async image => {
+                await image.decode();
+                const source = image.parentElement.querySelector('source[media*="dark"]');
+                const darkURL = new URL(source.srcset.split(/\s+/)[0], document.baseURI).href;
+                return {dark: image.currentSrc === darkURL, width: image.naturalWidth};
+              });
+              assert.equal(picked.dark, theme === 'dark', 'Expected theme-specific portrait');
+              assert.ok(picked.width > 0);
+              const images = article.locator('img');
+              for (const image of await images.all()) {
+                await image.scrollIntoViewIfNeeded();
+                await image.evaluate(async el => { await el.decode(); if (!el.naturalWidth) throw Error('Image is empty'); });
+              }
+              const projects = article.locator('details').filter({hasText:'Two more projects to try'});
+              await projects.locator('summary').click();
+              await projects.getByRole('link',{name:'ClaimGuard'}).waitFor();
+              const activity = article.locator('details').filter({hasText:'Recent repository activity'});
+              await activity.locator('summary').click();
+              await activity.getByText('Recently pushed projects').waitFor();
+              await page.evaluate(() => window.scrollTo(0,0));
+              await page.screenshot({path: 'captures/overview-' + theme + '.png'});
+              await article.screenshot({path: 'captures/readme-' + theme + '.png'});
+              console.log(theme, await images.count(), 'images loaded and both disclosures opened');
+              await page.close();
+            }
+          } finally { await browser.close(); }
+          JS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: github-overview-light-and-dark
+          path: ${{ runner.temp }}/overview/captures
+          if-no-files-found: error
