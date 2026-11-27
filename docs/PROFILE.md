@@ -1,6 +1,6 @@
 # Profile maintenance
 
-GitHub displays the root `README.md` on [Yatharth’s Overview](https://github.com/Yatharth10-bit). Edit the introduction, selected projects and contact links there. Keep the activity markers intact so the daily refresh can update that section.
+GitHub displays the root `README.md` on [Yatharth’s Overview](https://github.com/Yatharth-Srivastav). Edit the introduction, selected projects and contact links there. Keep the activity markers intact so the daily refresh can update that section.
 
 The light and dark banners, portfolio button and project tiles live in `assets/`. Edit `scripts/brand.mjs` and run `node scripts/brand.mjs` to rebuild the brand artwork. `scripts/portrait.json` supplies the portrait pattern. Run `node --test tests/profile.test.mjs` from the repository root before opening a pull request.
 

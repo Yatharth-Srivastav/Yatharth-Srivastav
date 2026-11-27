@@ -14,7 +14,7 @@ function banner(dark){
   <style>@media(prefers-reduced-motion:no-preference){.trace{stroke-dasharray:1;animation:draw 2.8s ease-out 1 both}@keyframes draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}}</style>
   <rect width="960" height="368" rx="12" fill="${page}"/><g clip-path="url(#plate)"><rect x="555" width="405" height="368" fill="#293da4"/><rect x="555" width="405" height="368" fill="url(#screen)"/><circle cx="760" cy="174" r="136" fill="#1b2e85"/><g transform="translate(612 34) scale(1.06)" fill="none" stroke="#fff2d9" stroke-linecap="round">${portrait}</g>
   <path class="trace" pathLength="1" d="M550 287C606 288 611 268 638 273S675 318 708 283 745 244 773 265 815 306 844 269 881 229 907 253 935 281 966 264" fill="none" stroke="#ff88b7" stroke-width="3.5"/></g>
-  <g font-family="${mono}" font-size="15" letter-spacing="1.6" fill="${blue}"><text x="36" y="40">YATHARTH10-BIT / GITHUB</text></g><path d="M36 57H520M36 297H520" stroke="${rule}"/>
+  <g font-family="${mono}" font-size="15" letter-spacing="1.6" fill="${blue}"><text x="36" y="40">YATHARTH-SRIVASTAV / GITHUB</text></g><path d="M36 57H520M36 297H520" stroke="${rule}"/>
   <g font-family="${serif}" fill="${ink}" font-size="91" letter-spacing="-5"><text x="31" y="158">Yatharth</text><text x="32" y="247" font-style="italic">Srivastav<tspan fill="${blue}">.</tspan></text></g>
   <text x="36" y="333" font-family="${sans}" fill="${ink}" font-size="22">Developer &amp; designer</text><text x="517" y="332" text-anchor="end" font-family="${mono}" font-size="17" fill="${blue}">INDIA</text></svg>`;
 }
